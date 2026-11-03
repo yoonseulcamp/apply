@@ -194,7 +194,7 @@ async function applyPage(eventId) {
       q('residenceRegion', '주로 생활하는 지역을 알려주세요.', text('residenceRegion', { maxlength: 30, placeholder: '예: 서울 마포구' })),
       q('phone', '휴대전화 번호를 적어주세요.', text('phone', { type: 'tel', inputmode: 'tel', autocomplete: 'tel', maxlength: 13, placeholder: '010-0000-0000' })),
       q('openChatUrl', '연락받을 카카오톡 1:1 오픈채팅 링크를 적어주세요.', text('openChatUrl', { type: 'url', inputmode: 'url', maxlength: 300, placeholder: 'https://open.kakao.com/o/...' }),
-        { hint: '참가 가능 여부와 입금 방법을 이 오픈채팅으로 안내드려요. 카카오톡 → 오픈채팅 → 만들기 → 1:1 채팅 → 링크 복사' }),
+        { hint: '참가 가능 여부와 입금 방법을 이 오픈채팅으로 안내드려요. 카카오톡 → 새로운 채팅 → 오픈채팅 → 1:1 채팅 (채팅방 이름: 윤슬, 참여설정: 기본 프로필, 검색 허용 X) → 확인 → 링크 복사' }),
       q('sourceChannel', '윤슬을 어떻게 알게 되셨나요?', h('div', {}, sourceBox, otherSource)),
       q('intro', '간단한 자기소개를 들려주세요.', area('intro', { maxlength: 500, rows: 3 }), { hint: '캠프장이 신청 내용을 확인할 때 참고해요. (10자 이상)' })),
 

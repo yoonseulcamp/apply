@@ -218,7 +218,7 @@ async function applyPage(eventId) {
       q('relationshipValues', '관계에서 소중하게 생각하는 가치는 무엇인가요?', area('relationshipValues', { maxlength: 300, rows: 3 }), { hint: 'ex. 신뢰, 배려 등' }),
       q('relationshipStory', '최근 나눔, 교제, 관계에 있어 나누고 싶은 고민이나 이야기가 있다면 적어주세요.', area('relationshipStory', { maxlength: 1000 }), { optional: true })),
 
-    sec('04', '함께 나눌 시간', '참여 전에 아래 내용을 확인해주세요.',
+    sec('04', '함께 나눌 시간', '참여 전에 아래 내용을 확인 후 체크해주세요.',
       check('confirmsSchedule', `안내된 날짜와 시간(${fmtDate(ev.startsAt)} ${fmtTime(ev.startsAt)})에 참석할 수 있어요.`),
       check('confirmsAge', `모집 연령 기준(${ageText})을 확인했고, 해당해요.`),
       check('confirmsSingle', '현재 미혼이며, 미혼 청년 대상 모임이라는 점을 확인했어요.'),

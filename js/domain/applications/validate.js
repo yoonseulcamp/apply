@@ -1,5 +1,5 @@
                                                  
-import { cleanMultiline, cleanText, normalizeKoreanMobile, normalizeOpenChatUrl } from './normalize.js';
+import { cleanMultiline, cleanText, normalizeKakaoId, normalizeKoreanMobile } from './normalize.js';
 
 /**
  * 신청서 입력 검증(운영자 확정 양식 v2, decisions D-020). 화면은 섹션별로 안내하고, API가 전체를 다시 검증한다(서버 검증이 기준).
@@ -13,7 +13,7 @@ import { cleanMultiline, cleanText, normalizeKoreanMobile, normalizeOpenChatUrl 
                  
                 
                 
-                      
+                  
                         
                              
                                   
@@ -56,7 +56,7 @@ import { cleanMultiline, cleanText, normalizeKoreanMobile, normalizeOpenChatUrl 
                  
                     
                 
-                      
+                  
                         
                      
                           
@@ -89,7 +89,7 @@ import { cleanMultiline, cleanText, normalizeKoreanMobile, normalizeOpenChatUrl 
 
 /** 신청서 섹션(운영자 양식 순서): 1 윤슬에서 만날 당신 · 2 신앙 물결 · 3 당신의 빛 · 4 함께 나눌 시간 · 5 동의 */
 export const APPLICATION_STEPS = {
-  1: ['realName', 'gender', 'birthYear', 'occupation', 'residenceRegion', 'phone', 'openChatUrl', 'sourceChannel', 'intro'],
+  1: ['realName', 'gender', 'birthYear', 'occupation', 'residenceRegion', 'phone', 'kakaoId', 'sourceChannel', 'intro'],
   2: ['attendsChurch', 'churchName', 'pastorName', 'churchRegion', 'denomination', 'attendancePeriod', 'churchActivities', 'churchProofImage', 'faithIntro'],
   3: ['selfExpression', 'relationshipValues', 'relationshipStory', 'applicationReason', 'preferredAgeNote', 'onsiteNickname', 'sameChurchPreference'],
   4: ['confirmsSchedule', 'confirmsAge', 'confirmsSingle', 'agreesPurpose', 'consents.termsRefund', 'consents.conductPhotoBan'],
@@ -114,8 +114,8 @@ export function validateApplicationInput(input                  , currentYear   
   const intro = cleanMultiline(input.intro, 500);
   if (!intro || intro.length < 10) errors.intro = '자기소개를 10자 이상 적어 주세요.';
 
-  const openChatUrl = normalizeOpenChatUrl(input.openChatUrl ?? '');
-  if (!openChatUrl) errors.openChatUrl = '카카오톡 1:1 오픈채팅 링크(https://open.kakao.com/o/...)를 입력해 주세요.';
+  const kakaoId = normalizeKakaoId(input.kakaoId ?? '');
+  if (!kakaoId) errors.kakaoId = '카카오톡 아이디를 확인해 주세요(영문·숫자·. _ - 만 쓸 수 있어요).';
 
   const sourceChannel = cleanText(input.sourceChannel, 50);
   if (!sourceChannel) errors.sourceChannel = '윤슬을 알게 된 경로를 알려 주세요.';
@@ -166,7 +166,7 @@ export function validateApplicationInput(input                  , currentYear   
       gender: input.gender,
       phoneE164: phoneE164 ,
       intro: intro ,
-      openChatUrl: openChatUrl ,
+      kakaoId: kakaoId ,
       sourceChannel: sourceChannel ,
       occupation: occupation ,
       residenceRegion: residenceRegion ,

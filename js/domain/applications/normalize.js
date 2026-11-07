@@ -26,7 +26,13 @@ export function phoneLast4(e164        )         {
   return e164.slice(-4);
 }
 
-/** 카카오 1:1 오픈채팅 URL만 허용(https://open.kakao.com/o/...). 쿼리·프래그먼트 제거. */
+/** 카카오톡 아이디: 영문·숫자·. _ - 2~40자. 앞뒤 공백과 앞의 @ 는 지운다. 맞지 않으면 null. */
+export function normalizeKakaoId(input        )                {
+  const id = input.trim().replace(/^@/, '');
+  return /^[A-Za-z0-9._-]{2,40}$/.test(id) ? id : null;
+}
+
+/** (예전 신청) 카카오 1:1 오픈채팅 URL만 허용(https://open.kakao.com/o/...). 쿼리·프래그먼트 제거. */
 export function normalizeOpenChatUrl(input        )                {
   let url     ;
   try {

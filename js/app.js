@@ -60,7 +60,7 @@ function eventCard(e) {
 
 // ── 신청서 ──────────────────────────────────────────────
 const SOURCES = ['인스타그램', '지인 소개', '교회 공동체', '기타'];
-const REQUIRED_TEXT = ['realName', 'birthYear', 'occupation', 'residenceRegion', 'phone', 'openChatUrl', 'intro', 'churchName', 'pastorName',
+const REQUIRED_TEXT = ['realName', 'birthYear', 'occupation', 'residenceRegion', 'phone', 'kakaoId', 'intro', 'churchName', 'pastorName',
   'denomination', 'attendancePeriod', 'faithIntro', 'selfExpression', 'relationshipValues'];
 const REQUIRED_CHECKS = {
   confirmsSchedule: '안내된 날짜와 시간에 참석할 수 있는지 확인해 주세요.',
@@ -71,6 +71,15 @@ const REQUIRED_CHECKS = {
   'consents.privacyRequired': '개인정보 수집·이용에 동의해야 신청할 수 있어요.',
   'consents.sensitiveReligion': '민감정보 수집·이용에 동의해야 신청할 수 있어요.',
 };
+
+/** 입력 중인 휴대전화 번호에 하이픈 넣기(01012345678 → 010-1234-5678, 10자리는 3-3-4) */
+function formatPhone(value) {
+  const d = value.replace(/\D/g, '').slice(0, 11);
+  if (d.length < 4) return d;
+  if (d.length < 8) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  if (d.length < 11) return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+}
 
 async function applyPage(eventId) {
   let ev;
@@ -136,7 +145,7 @@ async function applyPage(eventId) {
   const info = [
     ['일시', `${fmtDate(ev.startsAt)} ${fmtTime(ev.startsAt)}`],
     ['장소', place],
-    ['대상', '현재 교회에 출석하며 신앙생활을 이어가는 미혼 청년'],
+    ['대상', `현재 교회에 출석하며 신앙생활을 이어가는 미혼 청년 (${ageText})`],
     ['참가 인원', headText],
     ['진행 시간', ev.durationNote || fmtDuration(ev.durationMinutes)],
     ['참가비', fmtKrw(ev.feeKrw)],
@@ -193,8 +202,8 @@ async function applyPage(eventId) {
       q('occupation', '현재 하는 일이나 전공을 알려주세요.', text('occupation', { maxlength: 50 }), { hint: 'ex. 대학생(전공), 교사, 의료직, IT, 디자인' }),
       q('residenceRegion', '주로 생활하는 지역을 알려주세요.', text('residenceRegion', { maxlength: 30, placeholder: '예: 서울 마포구' })),
       q('phone', '휴대전화 번호를 적어주세요.', text('phone', { type: 'tel', inputmode: 'tel', autocomplete: 'tel', maxlength: 13, placeholder: '010-0000-0000' })),
-      q('openChatUrl', '연락받을 카카오톡 1:1 오픈채팅 링크를 적어주세요.', text('openChatUrl', { type: 'url', inputmode: 'url', maxlength: 300, placeholder: 'https://open.kakao.com/o/...' }),
-        { hint: '참가 가능 여부와 입금 방법을 이 오픈채팅으로 안내드려요. 카카오톡 → 새로운 채팅 → 오픈채팅 → 1:1 채팅 (채팅방 이름: 윤슬(본인이름), 참여설정: 기본 프로필, 검색 허용 X) → 확인 → 링크 복사' }),
+      q('kakaoId', '연락받을 카카오톡 아이디를 적어주세요.', text('kakaoId', { autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false', maxlength: 40, placeholder: '예: yoonseul_camp' }),
+        { hint: '참가 가능 여부와 입금 방법을 카카오톡으로 안내드려요. 아이디는 카카오톡 설정 → 프로필 관리 → 카카오톡 ID에서 확인할 수 있어요. 캠프장이 아이디로 친구 추가할 수 있도록 "ID 검색 허용"을 켜 주세요.' }),
       q('sourceChannel', '윤슬을 어떻게 알게 되셨나요?', h('div', {}, sourceBox, otherSource)),
       q('intro', '간단한 자기소개를 들려주세요.', area('intro', { maxlength: 500, rows: 3 }), { hint: '캠프장이 신청 내용을 확인할 때 참고해요. (10자 이상)' })),
 
@@ -235,6 +244,10 @@ async function applyPage(eventId) {
       h('p', { class: 'note' }, '신청서를 제출해주시면 윤슬 캠프장이 신청 내용을 확인한 뒤 참가 가능 여부와 입금 방법을 안내드립니다. 참가 가능 안내를 받은 후 참가비 입금이 확인되면 신청이 최종 확정됩니다.'),
       formError, submit));
   errSlots.pastorName = form.querySelector('[data-for="pastorName"]');
+  // 휴대전화 번호는 숫자만 쳐도 010-1234-5678 처럼 하이픈이 들어간다
+  const phoneInput = form.querySelector('[name="phone"]');
+  phoneInput.addEventListener('input', () => { phoneInput.value = formatPhone(phoneInput.value); });
+  phoneInput.value = formatPhone(phoneInput.value);
   syncOther();
   if (saved.sourceChannel === '기타' && saved.sourceOther) otherSource.value = saved.sourceOther;
 
@@ -302,7 +315,7 @@ async function applyPage(eventId) {
     const body = {
       eventId, applicationType: v.applicationType,
       realName: v.realName, gender: v.gender, birthYear: Number.isFinite(year) ? year : 0,
-      occupation: v.occupation, residenceRegion: v.residenceRegion, phone: v.phone, openChatUrl: v.openChatUrl.trim(),
+      occupation: v.occupation, residenceRegion: v.residenceRegion, phone: v.phone, kakaoId: v.kakaoId.trim(),
       sourceChannel: v.sourceChannel === '기타' ? `기타: ${v.sourceOther.trim()}` : v.sourceChannel,
       intro: v.intro,
       // 교회 이름을 적은 것 = 현재 출석 중, 미혼 청년 대상 확인 = 모임 취지 동의(양식에 별도 질문 없음, decisions D-020)
@@ -364,9 +377,9 @@ function donePage() {
     h('p', {}, '소중한 이야기를 들려주셔서 고맙습니다.'),
     h('ol', { class: 'steps' },
       h('li', {}, '윤슬 캠프장이 신청 내용을 확인해요.'),
-      h('li', {}, '남겨 주신 오픈채팅으로 참가 가능 여부와 입금 방법을 안내드려요.'),
+      h('li', {}, '남겨 주신 카카오톡으로 참가 가능 여부와 입금 방법을 안내드려요.'),
       h('li', {}, '안내를 받은 뒤 참가비 입금이 확인되면 신청이 최종 확정돼요.')),
-    h('p', { class: 'fine' }, '신청 내용을 바꾸거나 취소하고 싶으시면 안내받은 오픈채팅으로 말씀해 주세요.'),
+    h('p', { class: 'fine' }, '신청 내용을 바꾸거나 취소하고 싶으시면 안내받은 카카오톡으로 말씀해 주세요.'),
     h('p', {}, h('a', { href: '#/' }, '처음으로'))));
 }
 

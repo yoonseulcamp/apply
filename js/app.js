@@ -203,7 +203,7 @@ async function applyPage(eventId) {
       q('residenceRegion', '주로 생활하는 지역을 알려주세요.', text('residenceRegion', { maxlength: 30, placeholder: '예: 서울 마포구' })),
       q('phone', '휴대전화 번호를 적어주세요.', text('phone', { type: 'tel', inputmode: 'tel', autocomplete: 'tel', maxlength: 13, placeholder: '010-0000-0000' })),
       q('kakaoId', '연락받을 카카오톡 아이디를 적어주세요.', text('kakaoId', { autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false', maxlength: 40, placeholder: '예: yoonseul_camp' }),
-        { hint: '참가 가능 여부와 입금 방법을 카카오톡으로 안내드려요. 아이디는 카카오톡 설정 → 프로필 관리 → 카카오톡 ID에서 확인할 수 있어요. 캠프장이 아이디로 친구 추가할 수 있도록 "ID 검색 허용"을 켜 주세요.' }),
+        { hint: '참가 가능 여부와 입금 방법을 카카오톡으로 안내드려요. 아이디는 카카오톡 → 친구추가 → 카카오톡 ID에서 확인할 수 있어요. 캠프장이 아이디로 친구 추가할 수 있도록 설정 → 친구관리에서 "전화번호로 친구 추가 허용"을 켜 주세요.' }),
       q('sourceChannel', '윤슬을 어떻게 알게 되셨나요?', h('div', {}, sourceBox, otherSource)),
       q('intro', '간단한 자기소개를 들려주세요.', area('intro', { maxlength: 500, rows: 3 }), { hint: '캠프장이 신청 내용을 확인할 때 참고해요. (10자 이상)' })),
 
